@@ -4,14 +4,13 @@ using UnityEditor;
 public class TabDisplayerEditorWindow : EditorWindow
 {
     #region General Setup
-    private const string WINDOW_TITLE = "Tab Window";
     private const float BUTTON_SECTION_WIDTH = 180;
     private const float BUTTON_SECTION_TOP_OFFSET = 4;
     private static readonly Color BUTTON_SECTION_COLOR = new Color(147f / 255, 160f / 255, 166f / 255);
     private static readonly Color TAB_DISPLAY_SECTION_COLOR = new Color(91f / 255, 100f / 255, 110f / 255);
     private static Tab ActiveTab = null;
 
-    [MenuItem("Tools/Configurator")]
+    [MenuItem("Custom/"+WINDOW_TITLE)]
     public static void ShowWindow()
     {
         GetWindow<TabDisplayerEditorWindow>(WINDOW_TITLE);
@@ -64,6 +63,8 @@ public class TabDisplayerEditorWindow : EditorWindow
         }
     }
     #endregion
+
+    private const string WINDOW_TITLE = "Tab Window";
 
     private static readonly Tab[] TABS = new Tab[]
     {
