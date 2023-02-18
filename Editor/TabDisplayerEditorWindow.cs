@@ -1,19 +1,20 @@
 using UnityEngine;
 using UnityEditor;
+using System.Collections.Generic;
 
-public class TabDisplayerEditorWindow : EditorWindow
+public abstract class TabDisplayerEditorWindow : EditorWindow
 {
-    #region General Setup
     private const float BUTTON_SECTION_WIDTH = 180;
     private const float BUTTON_SECTION_TOP_OFFSET = 4;
-    private static readonly Color BUTTON_SECTION_COLOR = new Color(147f / 255, 160f / 255, 166f / 255);
-    private static readonly Color TAB_DISPLAY_SECTION_COLOR = new Color(91f / 255, 100f / 255, 110f / 255);
-    private static Tab ActiveTab = null;
+    private readonly Color BUTTON_SECTION_COLOR = new(147f / 255, 160f / 255, 166f / 255);
+    private readonly Color TAB_DISPLAY_SECTION_COLOR = new(91f / 255, 100f / 255, 110f / 255);
 
-    [MenuItem("Custom/"+WINDOW_TITLE)]
-    public static void ShowWindow()
+    private Tab ActiveTab = null;
+    private List<Tab> allTabs;
+
+    private void OnEnable()
     {
-        GetWindow<TabDisplayerEditorWindow>(WINDOW_TITLE);
+        OnWindowInitialize();
     }
 
     private void OnGUI()
@@ -29,29 +30,93 @@ public class TabDisplayerEditorWindow : EditorWindow
         GUILayout.EndHorizontal();
     }
 
-    private void DrawButtonSection()
+    protected virtual void OnWindowInitialize()
+    {
+        SetWindowTitle("Tab Window");
+    }
+
+    protected virtual void DrawButtonSection()
     {
         GUILayout.BeginVertical(GUILayout.Width(BUTTON_SECTION_WIDTH));
         GUILayout.Space(BUTTON_SECTION_TOP_OFFSET);
-        for (int i = 0; i < TABS.Length; i++)
+        if (allTabs != null)
         {
-            if (GUILayout.Button(TABS[i].name, GUILayout.Width(BUTTON_SECTION_WIDTH - 8)))
+            for (int i = 0; i < allTabs.Count; i++)
             {
-                ActiveTab = TABS[i];
+                if (GUILayout.Button(allTabs[i].name, GUILayout.Width(BUTTON_SECTION_WIDTH - 8)))
+                {
+                    ActiveTab = allTabs[i];
+                }
+                GUILayout.Space(2);
             }
-            GUILayout.Space(2);
         }
         GUILayout.EndVertical();
     }
 
-    private void DrawTabDisplaySection()
+    protected virtual void DrawTabDisplaySection()
     {
         GUILayout.BeginVertical();
         ActiveTab?.drawer.Invoke();
         GUILayout.EndVertical();
     }
 
-    private sealed class Tab
+    public void SetDefaultTab(int index)
+    {
+        index %= allTabs.Count;
+        if (index < 0 || allTabs?.Count <= 0)
+        {
+            return;
+        }
+        ActiveTab = allTabs[index];
+    }
+
+    public void SetDefaultTab(Tab tab)
+    {
+        if (tab != null)
+        {
+            if (!allTabs.Contains(tab))
+            {
+                allTabs.Add(tab);
+            }
+            ActiveTab = tab;
+        }
+    }
+
+    public void NewTab(Tab tab)
+    {
+        if (allTabs == null)
+        {
+            allTabs = new List<Tab>();
+        }
+        allTabs.Add(tab);
+    }
+
+    public Tab NewTab(string name, System.Action drawer)
+    {
+        Tab tab = new(name, drawer);
+        NewTab(tab);
+        return tab;
+    }
+
+    public void NewTabs(params Tab[] tabs)
+    {
+        foreach (Tab tab in tabs)
+        {
+            NewTab(tab);
+        }
+    }
+
+    public void ClearTabs()
+    {
+        allTabs = null;
+    }
+
+    public void SetWindowTitle(string title)
+    {
+        titleContent = new GUIContent(title);
+    }
+
+    public sealed class Tab
     {
         public readonly string name;
         public readonly System.Action drawer;
@@ -61,24 +126,5 @@ public class TabDisplayerEditorWindow : EditorWindow
             this.name = name;
             this.drawer = drawer;
         }
-    }
-    #endregion
-
-    private const string WINDOW_TITLE = "Tab Window";
-
-    private static readonly Tab[] TABS = new Tab[]
-    {
-        new Tab("Tab 0", Tab0),
-        new Tab("Tab 1", Tab1)
-    };
-
-    private static void Tab0() 
-    {
-        GUILayout.Label("Tab 0 display");
-    }
-
-    private static void Tab1() 
-    {
-        GUILayout.Label("Tab 1 display");
     }
 }
