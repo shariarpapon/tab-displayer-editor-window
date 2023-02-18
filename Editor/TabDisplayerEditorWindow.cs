@@ -62,17 +62,20 @@ public abstract class TabDisplayerEditorWindow : EditorWindow
 
     public void SetDefaultTab(int index)
     {
-        index %= allTabs.Count;
-        if (index < 0 || allTabs?.Count <= 0)
-        {
-            return;
-        }
-        ActiveTab = allTabs[index];
+	if(allTabs != null)
+	{
+        	index %= allTabs.Count;
+        	if (index < 0 || allTabs.Count <= 0)
+        	{
+            		return;
+        	}
+        	ActiveTab = allTabs[index];
+	}
     }
 
     public void SetDefaultTab(Tab tab)
     {
-        if (tab != null)
+        if (tab != null && allTabs != null)
         {
             if (!allTabs.Contains(tab))
             {
@@ -84,6 +87,8 @@ public abstract class TabDisplayerEditorWindow : EditorWindow
 
     public void NewTab(Tab tab)
     {
+	if(tab == null) return;
+
         if (allTabs == null)
         {
             allTabs = new List<Tab>();
