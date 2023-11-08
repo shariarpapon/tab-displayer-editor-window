@@ -34,7 +34,7 @@ namespace Everime.CustomEditor
 
         protected virtual void OnWindowInitialize()
         {
-            Debug.Log("Tab window intialized");
+            Debug.Log("Tab window initialized : " + GetType().Name);
         }
 
         protected virtual void DrawButtonSection()
@@ -45,7 +45,7 @@ namespace Everime.CustomEditor
             {
                 for (int i = 0; i < allTabs.Count; i++)
                 {
-                    if (DrawTabButton(allTabs[i].name))
+                    if (SelectTab(allTabs[i].name))
                     {
                         ActiveTab = allTabs[i];
                     }
@@ -75,7 +75,7 @@ namespace Everime.CustomEditor
             }
         }
 
-        public bool DrawTabButton(string name)
+        public bool SelectTab(string name)
         {
             return GUILayout.Button(name, GUILayout.Width(BUTTON_SECTION_WIDTH - 8));
         }
@@ -92,7 +92,7 @@ namespace Everime.CustomEditor
             }
         }
 
-        public void NewTab(Tab tab)
+        public void AddTab(Tab tab)
         {
             if (tab == null) return;
 
@@ -104,19 +104,19 @@ namespace Everime.CustomEditor
                 allTabs.Add(tab);
         }
 
-        public Tab NewTab(string name, System.Action drawer)
-        {
-            Tab tab = new(name, drawer);
-            NewTab(tab);
-            return tab;
-        }
-
-        public void NewTabs(params Tab[] tabs)
+        public void AddTabs(params Tab[] tabs)
         {
             foreach (Tab tab in tabs)
             {
-                NewTab(tab);
+                AddTab(tab);
             }
+        }
+
+        public Tab NewTab(string name, System.Action renderer)
+        {
+            Tab tab = new Tab(name, renderer);
+            AddTab(tab);
+            return tab;
         }
 
         public void ClearTabs()
