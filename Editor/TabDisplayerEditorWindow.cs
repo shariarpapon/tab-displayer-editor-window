@@ -58,7 +58,7 @@ namespace Wiz.CustomEditor
         protected virtual void DrawTabDisplaySection()
         {
             GUILayout.BeginVertical();
-            ActiveTab?.drawer.Invoke();
+            ActiveTab?.renderer.Invoke();
             GUILayout.EndVertical();
         }
 
@@ -168,12 +168,12 @@ namespace Wiz.CustomEditor
         public sealed class Tab
         {
             public readonly string name;
-            public readonly System.Action drawer;
+            public readonly System.Action renderer;
 
-            public Tab(string name, System.Action drawer)
+            public Tab(string name, System.Action renderer)
             {
                 this.name = name;
-                this.drawer = drawer;
+                this.renderer = renderer;
             }
         }
     }
