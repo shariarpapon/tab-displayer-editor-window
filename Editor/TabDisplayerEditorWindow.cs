@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 
-namespace Everime.CustomEditor
+namespace Wiz.CustomEditor
 {
     public abstract class TabDisplayerEditorWindow : EditorWindow
     {
@@ -139,9 +139,30 @@ namespace Everime.CustomEditor
             buttonSectionColor = color;
         }
 
+        public void SetTabDisplaySectionColor(string colorHex)
+        {
+            tabDisplaySectionColor = HexToColor(colorHex);
+        }
+
+        public void SetButtonSectionColor(string colorHex)
+        {
+            buttonSectionColor = HexToColor(colorHex);
+        }
+
         public void SetContentColor(Color color)
         {
             GUI.contentColor = color;
+        }
+
+        public void SetContentColor(string colorHex)
+        {
+            GUI.contentColor = HexToColor(colorHex);
+        }
+
+        public static Color HexToColor(string hex)
+        {
+            ColorUtility.TryParseHtmlString(hex, out Color output);
+            return output;
         }
 
         public sealed class Tab
